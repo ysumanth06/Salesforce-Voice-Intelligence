@@ -1,6 +1,6 @@
 # Salesforce Voice Intelligence Layer
 
-> **Status**: 📋 Specification Complete — Pending Implementation
+> **Status**: 🚀 Ready for Implementation — All Stories APPROVED ✅
 
 A production-ready Salesforce-native Voice Intelligence Layer that records voice notes on any record, streams real-time transcription via OpenAI Whisper, extracts actionable tasks using GPT-4.1-mini, and displays everything in an inline dashboard — all without leaving Salesforce.
 
@@ -14,6 +14,8 @@ A production-ready Salesforce-native Voice Intelligence Layer that records voice
 | [`docs/spec.md`](docs/spec.md) | Functional specification (SFSpeckit) — user stories, FRs, security model |
 | [`docs/clarification-report.md`](docs/clarification-report.md) | Clarification report — gap analysis, 10-point checklist, stakeholder sign-off |
 | [`docs/plan.md`](docs/plan.md) | Technical implementation plan — architecture, deployment order, scoring gates |
+| [`docs/review-report.md`](docs/review-report.md) | Story review report — dependency graph, risk analysis, sign-off |
+| [`docs/stories/`](docs/stories/) | **7 READY Stories** (task_story_00.md to task_story_06.md) |
 | [`docs/data-model.md`](docs/data-model.md) | Data model — ContentVersion field definitions, ERD, Permission Set, Named Credential |
 
 ---

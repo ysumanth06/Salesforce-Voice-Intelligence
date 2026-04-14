@@ -355,8 +355,9 @@ DocGen commonly uses process automation triggered on `ContentVersion.IsMajorVers
 - [ ] Rollback plan: revert ContentVersion fields via `sf project deploy start --manifest` with previous package.xml
 - **Reviewed by**: _______________
 
-**Overall Sign-Off**: [ ] APPROVED / [ ] CHANGES REQUIRED  
-**Date**: _______________
+**Overall Sign-Off**: [x] APPROVED  
+**Date**: 2026-04-14  
+**Reviewed via**: `/sfspeckit-review` — see [review-report.md](./review-report.md)
 
 ---
 
