@@ -137,6 +137,7 @@ No other file appears in more than one story's implementation layers.
 - [x] Naming conventions are consistent (`Voice_Intelligence_User`, `[Voice]` prefix, Apex class names)
 - [x] Shared infrastructure (VoiceTestDataFactory, Named Credential, PS) is properly consolidated in Story-000
 - [x] Security patterns consistent: `with sharing` declared in every FULL story's Developer Notes; `WITH USER_MODE` called out explicitly
+- [x] **Technical Strategy Documented**: Simulated Streaming (Audio Chunking) rationale, pros, cons, and mitigation formally added to `plan.md`.
 
 **Architect Sign-Off: ✅ APPROVED**
 

@@ -217,6 +217,30 @@ LWC (Client)
 
 ---
 
+## Technical Strategy: Simulated Streaming (Audio Chunking)
+
+To provide a real-time transcription experience while respecting Salesforce platform constraints, the system implements a **Simulated Streaming** architecture.
+
+### 1. The Approach
+The LWC `voiceNoteRecorder` bifurcates the audio stream into **1-second chunks** using the `MediaRecorder` API (`timeslice: 1000`). Each chunk is base64-encoded and transmitted via stateless imperative Apex callouts to OpenAI Whisper.
+
+### 2. Rationale & Advantages
+*   **Platform Alignment**: Salesforce LWC and Apex are natively stateless. Standard HTTP request/response patterns for small chunks circumvent the complexity and session-management issues of WebSockets within the Salesforce proxy.
+*   **UX Responsiveness**: Provides immediate visual feedback, allowing users to verify transcription accuracy as they speak.
+*   **Heap Limit Mitigation**: Sync Apex has a 6MB heap limit. A 5-minute audio file (~9.5MB) would crash a standard controller. Chunks (~32KB) ensure the system stays well within platform safety limits.
+*   **Crash Resilience**: Partial transcripts are delivered and stored progressively. If the browser tab is closed mid-recording, the partial data up to that point is preserved.
+
+### 3. Disadvantages & Risks
+*   **Context Fragmentation**: Transcribing words in isolated 1-second snippets can lead to inaccuracies for phonemes that are split across chunk boundaries.
+*   **Callout Volume**: Results in up to 300 API calls for a 5-minute recording. While manageable, it increases transaction overhead.
+
+### 4. Mitigation: The Dual-Pipeline Strategy
+To ensure production-grade accuracy without sacrificing the "real-time" feel:
+*   **The UX Pipeline (Chunks)**: Populates `Partial_Transcript__c` immediately for user feedback.
+*   **The System Pipeline (Batch)**: Upon stopping the recording, the **entire** audio file is saved. The `VoiceTranscriptionService` (Queueable) performs a single, full-context transcription that overwrites the partial text in `Transcript__c`, ensuring high-fidelity results and context-aware task extraction.
+
+---
+
 ## LWC Architecture
 
 ### `voiceNoteRecorder`
@@ -310,7 +334,10 @@ Both use `Bearer` token auth managed by External Credential principal — zero h
 
 ### `StreamingTranscriptionController` — Chunk Strategy
 
-Since Apex cannot hold open WebSocket connections, "streaming" in v1 is simulated: LWC calls `transcribeChunk(base64, sessionId)` for each 1-second audio chunk. The controller makes a synchronous Whisper callout per chunk and returns the partial transcript immediately. The LWC appends this to `partialTranscript` state. Full final transcription is done in the Queueable post-recording for accuracy.
+Since Apex cannot hold open WebSocket connections, "streaming" in v1 is simulated: LWC calls `transcribeChunk(base64, sessionId)` for each 1-second audio chunk. The controller makes a synchronous Whisper callout per chunk and returns the partial transcript immediately. 
+
+**Architectural Rationale**: 
+This bypasses the 6MB/12MB Apex heap limits for large file submissions during the recording phase. By using a stateless relay, we ensure high reliability and immediate user feedback. See **Technical Strategy: Simulated Streaming** above for the full pros/cons and mitigation analysis. Full final transcription is done in the Queueable post-recording for accuracy.
 
 ### DocGen ContentVersion Risk
 
